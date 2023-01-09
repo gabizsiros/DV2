@@ -169,13 +169,44 @@ map + geom_point(data = countries, aes(long, lat, size = rating), color = 'orang
 
 
 
-map <- ggmap(get_stamenmap(bbox = c(left = min(countries$long)-10, 
-                             bottom = min(countries$lat)-10, 
-                             right = max(countries$long)+20, 
-                             top = max(countries$lat))+20,
-              zoom = 2,
+map <- ggmap(get_stamenmap(bbox = c(left = min(countries$long)-5, 
+                             bottom = min(countries$lat)-5, 
+                             right = max(countries$long)+5, 
+                             top = max(countries$lat)+5),
+              zoom = 4,
               maptype = "watercolor"))
 
 map + geom_point(data = countries, aes(long, lat, size = rating), color = 'red')
 
 
+# anscombe
+
+df <- anscombe
+
+split(df,list(df$x1,df$x2,df$x3,df$x4))
+
+plot(anscombe[,c(1,5)])
+plot(anscombe[,c(2,6)])
+
+mean(anscombe[,c(1)])
+
+
+lapply(1:4, function(i) mean(anscombe[,c(i)]))
+
+lapply(1:4, function(i) cor(anscombe[,c(i)],anscombe[,c(i+4)]))
+
+lapply(1:4, function(i) data.frame(x = anscombe[,c(i)], y= anscombe[,c(i+4)], dataset = paste0("dataset",i)))
+
+
+anscombe <- rbindlist(lapply(1:4, function(i) data.frame(x = anscombe[,c(i)], y= anscombe[,c(i+4)], dataset = paste0("dataset",i))))
+
+ggplot(anscombe, aes (x,y)) +
+  geom_point()+
+  geom_smooth(method = 'lm', se= FALSE) +
+  facet_wrap( ~ dataset) +
+  theme_bw()
+
+
+
+
+       
