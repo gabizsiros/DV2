@@ -69,6 +69,17 @@ mtcars
 
 scale(mtcars)
 
-admit <- as.data.frame(UCBAdmissions)
+berkeley <- as.data.frame(UCBAdmissions)
 
+ggplot(berkeley, aes(Gender, Freq, fill = Admit)) +
+  geom_col(position = 'fill') +
+  scale_fill_manual(values = c("Admitted" = 'darkgreen',
+                               "Rejected" = 'darkred'))
+
+
+ggplot(berkeley, aes(Gender, Freq, fill = Admit)) +
+  geom_col() +
+  facet_wrap(~Dept) +
+  scale_fill_manual(values = c("Admitted" = 'darkgreen',
+                               "Rejected" = 'darkred'))
                 
