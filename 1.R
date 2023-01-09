@@ -207,6 +207,28 @@ ggplot(anscombe, aes (x,y)) +
   theme_bw()
 
 
+df <-datasauRus::datasaurus_dozen_wide
 
+
+lapply(seq(from = 1, to = 26, by = 2), 
+       function(i) data.frame (x = df[,c(i)]), y = df[,c(i+1)])
+
+
+
+
+dino_df <- rbindlist(lapply(seq(from = 1, to = 26, by = 2), function(i) {
+  data.frame(
+    x = df[ ,c(i)], 
+    y = df[ ,c(i+1)],
+    dataset = substr(names(df)[i], 1,nchar(names(df)[i])-2))
+}
+))
+
+
+ggplot(dino_df, aes (away_x,away_y)) +
+  geom_point()+
+  geom_smooth(method = 'lm', se= FALSE) +
+  facet_wrap( ~ dataset) +
+  theme_bw()
 
        
