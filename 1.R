@@ -105,4 +105,77 @@ ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width))  +
 
 
 library(data.table)
-                
+bookings <- fread('http://bit.ly/CEU-R-hotels-2018-prices')
+
+#bookings[i,j,by]
+
+bookings[1]
+bookings [price < 100 & holiday == 1]
+bookings [price < 100][holiday == 1][1:5] 
+
+#number of rows in "j" operator
+bookings [price < 100 & holiday == 1, .N]
+
+bookings [price < 100 & holiday == 1, mean(price)]
+
+bookings [price < 100 & holiday == 1, summary(price)]
+
+bookings [price < 100 & holiday == 1, hist(price)]
+
+
+
+##functions, avg price of bookings on weekends
+bookings[weekend == 1, mean(price)]
+bookings[weekend == 0, mean(price)]
+# by 
+bookings[,mean(price), by = list(weekend,holiday,nnights)]
+
+# "." instead of list. naming return column with list
+bookings[,.( price = mean(price), 
+             min =min(price), 
+             max = max(price)), 
+         by = .(weekend,holiday,nnights)]
+
+
+bookings[, price_per_night := price / nnights]
+
+
+
+features <- fread('http://bit.ly/CEU-R-hotels-2018-features')
+merge(bookings,features, all.x = TRUE)[is.na(city)]
+
+#todo bookings per country level aggregated data on avg rating
+countries <- features[, .(rating = mean(rating, na.rm = TRUE)), by = country][!is.na(country)]
+countries[order(country)]
+
+library(ggmap)
+library(tidygeocoder)
+countries <- data.table(geocode(countries,'country'))
+
+library(maps)
+data(worldMapEnv)
+map('world', fill = TRUE, col=  1:20)
+
+world <- map_data('world')
+
+str(world)
+
+map <- ggplot()+
+  geom_map(data = world, map = world, aes(long, lat, map_id = region)) +
+  theme_void() +
+  coord_fixed(1.3)
+
+map + geom_point(data = countries, aes(long, lat, size = rating), color = 'orange')
+
+
+
+map <- ggmap(get_stamenmap(bbox = c(left = min(countries$long)-10, 
+                             bottom = min(countries$lat)-10, 
+                             right = max(countries$long)+20, 
+                             top = max(countries$lat))+20,
+              zoom = 2,
+              maptype = "watercolor"))
+
+map + geom_point(data = countries, aes(long, lat, size = rating), color = 'red')
+
+
