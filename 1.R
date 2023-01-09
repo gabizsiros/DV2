@@ -82,4 +82,27 @@ ggplot(berkeley, aes(Gender, Freq, fill = Admit)) +
   facet_wrap(~Dept) +
   scale_fill_manual(values = c("Admitted" = 'darkgreen',
                                "Rejected" = 'darkred'))
+
+
+rm(list=ls())
+
+ggplot(iris, aes(Sepal.Length, Sepal.Width)) + geom_point() +
+  facet_wrap (~Species) +
+  geom_smooth(method = 'lm')
+
+iris
+
+
+ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width))  +
+  scale_fill_manual(values = c("setosa" = "green",
+                               "versicolor" = "red",
+                               "virginica" = 'blue')) +
+  geom_point(aes(color = Species)) +
+  geom_smooth(aes(color = Species),method = 'lm') +
+  geom_smooth(method = 'lm', color = 'black') +
+  theme_minimal() + 
+  guides()
+
+
+library(data.table)
                 
