@@ -14,9 +14,31 @@ df <- readRDS('flats.rds')
 
 ```{r}
 ggplot(df, aes(Area)) +
-  stat_bin( bins = 40, fill = "#006D77", center = 0.9) +
+  stat_bin(color = "white", fill = "#006D77", bins = 40) +
   labs(title = "Distribution area of flats (m2)") + 
-  theme_bw() +
+  theme_bw() 
+  
+```
+```{r}
+ggplot(df, aes(Price)) +
+  stat_density(aes(fill = Condition)) +
+  labs(title = "Distribution area of flats (m2)") + 
+  theme_bw() 
   
 ```
 
+```{r}
+ggplot(df, aes(x= Area, y = Price, color = Condition)) +
+  geom_point() +
+  labs(title = "Distribution area of flats (m2)") + 
+  theme_bw() 
+  
+```
+
+```{r}
+ggplot(df, aes(x= District, y = mean(Price))) +
+  geom_col( fill = "#006D77") +
+  labs(title = "Distribution area of flats (m2)") + 
+  theme_bw() 
+  
+```
