@@ -1,0 +1,22 @@
+---
+title: "HW1"
+output: html_document
+date: "2023-01-14"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+df <- readRDS('flats.rds')
+```
+
+```{r}
+ggplot(df, aes(Area)) +
+  stat_bin( bins = 40, fill = "#006D77", center = 0.9) +
+  labs(title = "Distribution area of flats (m2)") + 
+  theme_bw() +
+  
+```
+
