@@ -1,17 +1,22 @@
 ---
 title: "HW1"
-output: html_document
 date: "2023-01-14"
+output: 
+  prettydoc::html_pretty:
+    theme: "architect"
+    
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(ggplot2)
+library(data.table)
 ```
 
-```{r}
+```{r, echo = TRUE}
 df <- readRDS('flats.rds')
 ```
-
+## TASK 1 
 ```{r}
 ggplot(df, aes(Area)) +
   stat_bin(color = "white", fill = "#006D77", bins = 40) +
@@ -19,19 +24,22 @@ ggplot(df, aes(Area)) +
   theme_bw() 
   
 ```
+
+## TASK 2 
+
 ```{r}
 ggplot(data=subset(df, !is.na(Condition)), aes(Price)) +
   geom_density(aes(fill = Condition), na.rm = TRUE, alpha = 0.2) +
   labs(title = "Price distribution for flats in different conditions") + 
   scale_x_continuous(labels = function (x) {
-    paste(formatC(x,format = "d",big.mark =" "),"Ft")
+    paste(formatC(x,format = "d",big.mark =","),"Ft")
     }) + 
   theme_bw()+
   theme(legend.position = "top")
 
 ```
 
-
+## TASK 3
 
 ```{r}
 ggplot(data=subset(df, !is.na(Condition)), aes(x= Area, y = Price, color = Condition)) +
@@ -48,6 +56,7 @@ ggplot(data=subset(df, !is.na(Condition)), aes(x= Area, y = Price, color = Condi
   
 ```
 
+## TASK 4
 ```{r}
 ggplot(df) +
   geom_bar(aes(x= District, y = Price), stat = "summary", fill = "#006D77") +
@@ -60,6 +69,7 @@ ggplot(df) +
   
 ```
 
+## TASK 5
 ```{r}
 ggplot(df,aes(x= factor(District), y = Price)) +
   geom_violin(color = "#006D77", fill = "#66B7B0") +
@@ -70,13 +80,51 @@ ggplot(df,aes(x= factor(District), y = Price)) +
   theme_bw() 
 ```
 
+## TASK 6
 ```{r}
-#district, area, numwhole, numhald,price,floor, floorsinbgg,overhead,parking
-#districts <-  data.table(x = c(mean(df$Price[df$District == 1]),sd(df$Price[df$District == 1])))
+dist <- df[,.(District.mean = mean(District, na.rm = TRUE),
+      District.sd= sd(District, na.rm = TRUE),
+      Area.mean = mean(Area, na.rm = TRUE),
+      Area.sd = sd(Area, na.rm = TRUE),
+      Num_whole_rooms.mean = mean(Num_whole_rooms, na.rm = TRUE),
+      Num_whole_rooms.sd = sd(Num_whole_rooms, na.rm = TRUE),
+      Num_half_rooms.mean = mean(Num_half_rooms, na.rm = TRUE),
+      Num_half_rooms.sd = sd(Num_half_rooms, na.rm = TRUE),
+      Price.mean = mean(Price, na.rm = TRUE),
+      Price.sd = sd(Price, na.rm = TRUE),
+      Floor.mean = mean(Floor, na.rm = TRUE),
+      Floor.sd = sd(Floor, na.rm = TRUE),
+      Floors_in_bdg.mean = mean(Floors_in_bdg, na.rm = TRUE),
+      Floors_in_bdg.sd = sd(Floors_in_bdg, na.rm = TRUE),
+      Overhead.mean = mean(Overhead, na.rm = TRUE),
+      Overhead.sd = sd(Overhead, na.rm = TRUE)),
+      #Parking_fee.mean = mean('Parking_fee(monthly)'), <- I didnt find a solution for the parenthesis issue
+      #Parking_fee.sd = sd('Parking_fee(monthly)')),
+   by = "District"]
 
-#df[,list(mean(District),sd(District),mean(Area),sd(Area),mean(Price),sd(Price)),by = District]
-df[,mean(),.SDcols=is.numeric.]
+```
+
+```{r}
+str(dist)
+```
+
+```{r}
 
 
+#dt_result <- df[, lapply(.SD, function(x) c(mean = mean(x, na.rm = TRUE), sd = sd(x,na.rm = TRUE))), by="District", .SDcols=is.numeric]
+#dt_result <- rbindlist(dt_result, idcol = "Column")
+#dt_result[, c("mean", "sd") := tstrsplit(Column, "\\.")]
+```
+```{r}
+mds <- cmdscale(dist(scale(dist)))
+mds <- as.data.frame(mds)
+
+mds$districts <- dist$District
+
+ggplot(mds,aes(V1,V2)) +
+  geom_label(aes(label = districts)) +
+  labs(title = "Budapest districts", x ="", y = "") +
+    theme_void()+
+  theme(plot.title = element_text(hjust = 0.5) )
 ```
 
