@@ -20,25 +20,63 @@ ggplot(df, aes(Area)) +
   
 ```
 ```{r}
-ggplot(df, aes(Price)) +
-  stat_density(aes(fill = Condition)) +
-  labs(title = "Distribution area of flats (m2)") + 
-  theme_bw() 
-  
+ggplot(data=subset(df, !is.na(Condition)), aes(Price)) +
+  geom_density(aes(fill = Condition), na.rm = TRUE, alpha = 0.2) +
+  labs(title = "Price distribution for flats in different conditions") + 
+  scale_x_continuous(labels = function (x) {
+    paste(formatC(x,format = "d",big.mark =" "),"Ft")
+    }) + 
+  theme_bw()+
+  theme(legend.position = "top")
+
 ```
 
+
+
 ```{r}
-ggplot(df, aes(x= Area, y = Price, color = Condition)) +
+ggplot(data=subset(df, !is.na(Condition)), aes(x= Area, y = Price, color = Condition)) +
   geom_point() +
-  labs(title = "Distribution area of flats (m2)") + 
+  geom_smooth(method = 'lm', se = FALSE, aes(color = Condition)) +
+  labs(title = "How the condition of the flats affects price to area") + 
+  scale_x_continuous(labels = function(x) paste(x,"m2")) +
+  scale_y_continuous(labels = function (y) {
+    paste(formatC(y,format = "d",big.mark =","),"Ft")
+    }) + 
+  theme_bw() +
+  theme(legend.position = "bottom") 
+
+  
+```
+
+```{r}
+ggplot(df) +
+  geom_bar(aes(x= District, y = Price), stat = "summary", fill = "#006D77") +
+  scale_y_continuous(labels = function (y) {
+    paste(formatC(y,format = "d",big.mark =","),"Ft")
+    }) + 
+  scale_x_continuous(breaks= seq(1,23), minor_breaks = NULL) +
+  labs(y = "Average Price") +
   theme_bw() 
   
 ```
 
 ```{r}
-ggplot(df, aes(x= District, y = mean(Price))) +
-  geom_col( fill = "#006D77") +
-  labs(title = "Distribution area of flats (m2)") + 
+ggplot(df,aes(x= factor(District), y = Price)) +
+  geom_violin(color = "#006D77", fill = "#66B7B0") +
+  scale_y_continuous(labels = function (y) {
+    paste(formatC(y,format = "d",big.mark =","),"Ft")
+    }) + 
+  labs(x = "District") +
   theme_bw() 
-  
 ```
+
+```{r}
+#district, area, numwhole, numhald,price,floor, floorsinbgg,overhead,parking
+#districts <-  data.table(x = c(mean(df$Price[df$District == 1]),sd(df$Price[df$District == 1])))
+
+#df[,list(mean(District),sd(District),mean(Area),sd(Area),mean(Price),sd(Price)),by = District]
+df[,mean(),.SDcols=is.numeric.]
+
+
+```
+
