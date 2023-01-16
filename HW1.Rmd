@@ -14,7 +14,7 @@ library(data.table)
 ```
 
 ```{r, echo = TRUE}
-df <- readRDS('flats.rds')
+df <- data.table(readRDS('flats.rds'))
 ```
 ## TASK 1 
 ```{r}
@@ -35,7 +35,8 @@ ggplot(data=subset(df, !is.na(Condition)), aes(Price)) +
     paste(formatC(x,format = "d",big.mark =","),"Ft")
     }) + 
   theme_bw()+
-  theme(legend.position = "top")
+  theme(legend.position = "top") +
+  guides(fill= guide_legend(nrow = 1))
 
 ```
 
@@ -51,7 +52,8 @@ ggplot(data=subset(df, !is.na(Condition)), aes(x= Area, y = Price, color = Condi
     paste(formatC(y,format = "d",big.mark =","),"Ft")
     }) + 
   theme_bw() +
-  theme(legend.position = "bottom") 
+  theme(legend.position = "bottom") +
+  guides(color= guide_legend(nrow = 1))
 
   
 ```
@@ -66,6 +68,7 @@ ggplot(df) +
   scale_x_continuous(breaks= seq(1,23), minor_breaks = NULL) +
   labs(y = "Average Price") +
   theme_bw() 
+
   
 ```
 
@@ -111,9 +114,17 @@ str(dist)
 ```{r}
 
 
+df[, as.list(unlist(lapply(.SD, function(x)c(mean = mean(x, na.rm = TRUE), sd = sd(x,na.rm = TRUE))))), by="District", .SDcols=is.numeric]
+
 #dt_result <- df[, lapply(.SD, function(x) c(mean = mean(x, na.rm = TRUE), sd = sd(x,na.rm = TRUE))), by="District", .SDcols=is.numeric]
+
 #dt_result <- rbindlist(dt_result, idcol = "Column")
 #dt_result[, c("mean", "sd") := tstrsplit(Column, "\\.")]
+
+sapply(df,is.numeric)
+
+
+
 ```
 ```{r}
 mds <- cmdscale(dist(scale(dist)))
@@ -126,5 +137,8 @@ ggplot(mds,aes(V1,V2)) +
   labs(title = "Budapest districts", x ="", y = "") +
     theme_void()+
   theme(plot.title = element_text(hjust = 0.5) )
+```
+```{r}
+
 ```
 
